@@ -5,8 +5,8 @@ from PIL import Image
 
 st.set_page_config(page_title="Doctor Finder", layout="centered")
 
-# Set up logo and title side by side
-col1, col2 = st.columns([1, 5])  # adjust ratio if needed
+# logo and title
+col1, col2 = st.columns([1, 5])
 
 with col1:
     logo = Image.open("testphoto.jpg")
@@ -15,20 +15,20 @@ with col1:
 with col2:
     st.markdown("## Find a Specialist Near You")
 
-# Connect to database
+# Connect to db
 conn = sqlite3.connect("doctors.db")
 cursor = conn.cursor()
 
-# Load data from database
+# data from db
 df = pd.read_sql("SELECT * FROM doctors", conn)
 
-# Create dropdown filter options
+# dropdown for filter options
 types = df["type"].unique().tolist()
 cities = df["city"].unique().tolist()
 specialties = df["specialty"].unique().tolist()
 settings = df["setting"].unique().tolist()
 
-# Filters
+# filters
 st.subheader("Filter by:")
 col1, col2 = st.columns(2)
 
@@ -40,7 +40,7 @@ with col2:
     selected_specialty = st.selectbox("Specialty", ["Any"] + specialties)
     selected_setting = st.selectbox("Care Setting", ["Any"] + settings)
 
-# Apply filters
+# filters
 filtered_df = df.copy()
 
 if selected_type != "Any":
@@ -52,7 +52,7 @@ if selected_specialty != "Any":
 if selected_setting != "Any":
     filtered_df = filtered_df[filtered_df["setting"] == selected_setting]
 
-# Display results
+# display results
 st.subheader("Matching Doctors:")
 st.dataframe(
     filtered_df[["name", "type", "city", "specialty", "setting", "address", "contact_info"]].reset_index(drop=True)
