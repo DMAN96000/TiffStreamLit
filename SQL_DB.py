@@ -11,11 +11,9 @@ from faker import Faker
 import random
 import sqlite3
 
-# Initialize Faker
 fake = Faker()
 Faker.seed(0)
 
-# database schema
 doctor_types = ["PT", "OT", "SLP"]
 specialties = [
     "Stroke Rehab", "Autism", "Speech Delay", "Cognitive Rehab", 
@@ -30,7 +28,6 @@ georgia_cities = [
     ("Norcross", "GA"), ("Lawrenceville", "GA"), ("Suwanee", "GA")
 ]
 
-# Connect to SQLite and set up table
 conn = sqlite3.connect("doctors.db")
 cursor = conn.cursor()
 
@@ -48,7 +45,6 @@ cursor.execute('''
     )
 ''')
 
-# Generate 200 fake entries
 for _ in range(200):
     name = fake.name()
     doc_type = random.choice(doctor_types)
@@ -66,4 +62,4 @@ for _ in range(200):
 conn.commit()
 conn.close()
 
-print("✅ doctors.db created with 200 fake doctors")
+print("db made")
