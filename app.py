@@ -54,6 +54,9 @@ if selected_setting != "Any":
 
 # Display results
 st.subheader("Matching Doctors:")
-st.dataframe(filtered_df[["name", "type", "city", "specialty", "setting", "address", "contact_info"]])
+st.dataframe(
+    filtered_df[["name", "type", "city", "specialty", "setting", "address", "contact_info"]].reset_index(drop=True)
+)
+
 
 conn.close()
