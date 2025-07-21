@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import sqlite3
 import pandas as pd
 from PIL import Image
@@ -54,8 +54,16 @@ if selected_setting != "Any":
 
 # display results
 st.subheader("Matching Doctors:")
-display_df = filtered_df[["name", "type", "city", "specialty", "setting", "address", "contact_info"]].reset_index(drop=True)
-st.dataframe(display_df, hide_index=True)
 
+if filtered_df.empty:
+    st.info("No matching doctors found.")
+else:
+    for _, row in filtered_df.iterrows():
+        with st.expander(f"Dr. {row['name']} ({row['specialty']} - {row['city']})"):
+            st.markdown(f"**Practice Type:** {row['type']}")
+            st.markdown(f"**Care Setting:** {row['setting']}")
+            st.markdown(f"**Address:** {row['address']}")
+            st.markdown(f"**Contact Info:** {row['contact_info']}")
+            st.markdown(f"**Bio:** {row.get('bio', 'No bio available.')}")
 
 conn.close()
