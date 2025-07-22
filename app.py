@@ -24,7 +24,7 @@ st.markdown(
             margin-bottom: 20px;
         }
         .header-container img {
-            max-height: 300px;
+            max-height: 250px;
             width: auto;
         }
         .header-title {
