@@ -5,7 +5,21 @@ from PIL import Image
 
 st.set_page_config(page_title="Doctor Finder", layout="centered")
 
-# logo and title
+st.markdown(
+    """
+    <style>
+        body {
+            background-color: #fbf9f6;
+        }
+        .stApp {
+            background-color: #fbf9f6;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 col1, col2 = st.columns([1, 5])
 
 with col1:
@@ -15,20 +29,16 @@ with col1:
 with col2:
     st.markdown("## Find a Specialist Near You")
 
-# Connect to db
 conn = sqlite3.connect("doctors.db")
 cursor = conn.cursor()
 
-# data from db
 df = pd.read_sql("SELECT * FROM doctors", conn)
 
-# dropdown for filter options
 types = df["type"].unique().tolist()
 cities = df["city"].unique().tolist()
 specialties = df["specialty"].unique().tolist()
 settings = df["setting"].unique().tolist()
 
-# filters
 st.subheader("Filter by:")
 col1, col2 = st.columns(2)
 
@@ -40,7 +50,6 @@ with col2:
     selected_specialty = st.selectbox("Specialty", ["Any"] + specialties)
     selected_setting = st.selectbox("Care Setting", ["Any"] + settings)
 
-# filters
 filtered_df = df.copy()
 
 if selected_type != "Any":
@@ -52,7 +61,6 @@ if selected_specialty != "Any":
 if selected_setting != "Any":
     filtered_df = filtered_df[filtered_df["setting"] == selected_setting]
 
-# display results
 st.subheader("Matching Doctors:")
 
 if filtered_df.empty:
