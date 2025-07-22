@@ -9,7 +9,7 @@ st.set_page_config(page_title="Doctor Finder", layout="centered")
 col1, col2 = st.columns([1, 5])
 
 with col1:
-    logo = Image.open("testphoto.jpg")
+    logo = Image.open("testphoto.png")
     st.image(logo, width=100)
 
 with col2:
