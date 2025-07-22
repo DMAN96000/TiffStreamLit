@@ -56,16 +56,21 @@ st.markdown(
 
 # Connect to database
 conn = sqlite3.connect("PT.db")
-cursor = conn.cursor()
 df = pd.read_sql("SELECT * FROM doctors", conn)
 
-# Filter options
+# Get unique filter options
 types = df["type"].unique().tolist()
 cities = df["city"].unique().tolist()
 specialties = df["specialty"].unique().tolist()
 settings = df["setting"].unique().tolist()
 
 st.subheader("Filter by:")
+
+# Reset Filters Button
+if st.button("Reset Filters"):
+    st.experimental_rerun()
+
+# Filter layout
 col1, col2 = st.columns(2)
 
 with col1:
