@@ -68,7 +68,7 @@ st.subheader("Filter by:")
 
 # Reset Filters Button
 if st.button("Reset Filters"):
-    st.experimental_rerun()
+    st.rerun()
 
 # Filter layout
 col1, col2 = st.columns(2)
