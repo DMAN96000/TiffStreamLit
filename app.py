@@ -24,7 +24,7 @@ col1, col2 = st.columns([1, 5])
 
 with col1:
     logo = Image.open("testphoto")
-    st.image(logo, use_column_width=True)
+    st.image(logo, use_container_width=True)
 
 with col2:
     st.markdown("## Find a Specialist Near You")
