@@ -20,7 +20,7 @@ st.markdown(
 )
 
 
-col1, col2 = st.columns([1, 5])
+col1, col2 = st.columns([2, 4])
 
 with col1:
     logo = Image.open("testphoto")
