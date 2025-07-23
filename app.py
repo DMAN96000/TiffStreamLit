@@ -111,12 +111,13 @@ if selected_setting != "Any":
 if selected_gender != "Any":
     filtered_df = filtered_df[filtered_df["gender"] == selected_gender]
 
-# Show results
+# Show results only if a filter is applied
 if filters_applied:
-    st.subheader("Matching Doctors:")
     if filtered_df.empty:
+        st.subheader("Matching Doctors:")
         st.info("No matching doctors found.")
     else:
+        st.subheader("Matching Doctors:")
         for _, row in filtered_df.iterrows():
             with st.expander(f"Dr. {row['name']} ({row['specialty']} - {row['city']})"):
                 st.markdown(f"**Practice Type:** {row['type']}")
@@ -125,7 +126,5 @@ if filters_applied:
                 st.markdown(f"**Contact Info:** {row['contact_info']}")
                 st.markdown(f"**Gender:** {row['gender']}")
                 st.markdown(f"**Bio:** {row.get('bio', 'No bio available.')}")
-else:
-    st.info("Use the filters above to find a matching doctor.")
 
 conn.close()
