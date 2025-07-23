@@ -74,18 +74,16 @@ for key in filter_keys:
     if key not in st.session_state:
         st.session_state[key] = "Any"
 
-# Handle reset trigger safely
-if "reset_triggered" not in st.session_state:
-    st.session_state.reset_triggered = False
-
-if st.session_state.reset_triggered:
+# Reset filters if triggered
+if st.session_state.get("reset_triggered", False):
     for key in filter_keys:
         st.session_state[key] = "Any"
     st.session_state.reset_triggered = False
+    st.experimental_rerun()
 
 # Filter section with 2 columns and 3 rows
 st.subheader("Filter by:")
-col1, col2 = st.columns([1, 1])  # Equal width
+col1, col2 = st.columns([1, 1])
 
 with col1:
     st.selectbox("Clinician Type", ["Any"] + types, key="selected_type")
@@ -98,8 +96,9 @@ with col2:
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Reset Filters"):
         st.session_state.reset_triggered = True
+        st.experimental_rerun()
 
-# Pull values from session state
+# Read filter values
 selected_type = st.session_state.selected_type
 selected_city = st.session_state.selected_city
 selected_specialty = st.session_state.selected_specialty
