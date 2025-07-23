@@ -70,22 +70,19 @@ for key in ["selected_type", "selected_city", "selected_specialty", "selected_se
     if key not in st.session_state:
         st.session_state[key] = "Any"
 
-# Filter section
+# Filter section with 2 columns and 3 rows
 st.subheader("Filter by:")
-col1, col2, col3, col4, col5, col6 = st.columns(6)
+col1, col2 = st.columns(2)
 
 with col1:
     st.selectbox("Clinician Type", ["Any"] + types, key="selected_type")
-with col2:
     st.selectbox("City", ["Any"] + cities, key="selected_city")
-with col3:
-    st.selectbox("Specialty", ["Any"] + specialties, key="selected_specialty")
-with col4:
-    st.selectbox("Care Setting", ["Any"] + settings, key="selected_setting")
-with col5:
     st.selectbox("Gender", ["Any", "Female", "Male"], key="selected_gender")
-with col6:
-    st.markdown("<br>", unsafe_allow_html=True)  # spacing to align button
+
+with col2:
+    st.selectbox("Specialty", ["Any"] + specialties, key="selected_specialty")
+    st.selectbox("Care Setting", ["Any"] + settings, key="selected_setting")
+    st.markdown("<br>", unsafe_allow_html=True)  # Align button
     if st.button("Reset Filters"):
         st.session_state.selected_type = "Any"
         st.session_state.selected_city = "Any"
@@ -93,7 +90,7 @@ with col6:
         st.session_state.selected_setting = "Any"
         st.session_state.selected_gender = "Any"
 
-# Pull current selections from session_state
+# Pull values from session
 selected_type = st.session_state.selected_type
 selected_city = st.session_state.selected_city
 selected_specialty = st.session_state.selected_specialty
