@@ -4,6 +4,7 @@ import pandas as pd
 from PIL import Image
 import base64
 from io import BytesIO
+import time
 
 st.set_page_config(page_title="Doctor Finder", layout="centered")
 
@@ -58,28 +59,31 @@ st.markdown(
 conn = sqlite3.connect("PT.db")
 df = pd.read_sql("SELECT * FROM doctors", conn)
 
-# Get unique filter options (sorted alphabetically, case-insensitive)
+# Get unique filter options (sorted)
 types = sorted(df["type"].dropna().unique().tolist(), key=str.lower)
 cities = sorted(df["city"].dropna().unique().tolist(), key=str.lower)
 specialties = sorted(df["specialty"].dropna().unique().tolist(), key=str.lower)
 settings = sorted(df["setting"].dropna().unique().tolist(), key=str.lower)
+genders = sorted(df["gender"].dropna().unique().tolist(), key=str.lower)  # should be ['Female', 'Male']
 
 # Initialize session state
-for key in ["selected_type", "selected_city", "selected_specialty", "selected_setting"]:
+for key in ["selected_type", "selected_city", "selected_specialty", "selected_setting", "selected_gender"]:
     if key not in st.session_state:
         st.session_state[key] = "Any"
 
-# Handle reset button (sets a flag)
+# Handle reset button
 if st.button("Reset Filters"):
-    st.session_state._trigger_reset = True
-
-# After rerun, perform reset once and clear the flag
-if st.session_state.get("_trigger_reset", False):
     st.session_state.selected_type = "Any"
     st.session_state.selected_city = "Any"
     st.session_state.selected_specialty = "Any"
     st.session_state.selected_setting = "Any"
+    st.session_state.selected_gender = "Any"
+    st.session_state._trigger_reset = True
+
+# After rerun, clear flag and wait briefly
+if st.session_state.get("_trigger_reset", False):
     del st.session_state["_trigger_reset"]
+    time.sleep(0.15)
     st.experimental_rerun()
 
 # Filter UI
@@ -89,6 +93,7 @@ col1, col2 = st.columns(2)
 with col1:
     selected_type = st.selectbox("Clinician Type", ["Any"] + types, key="selected_type")
     selected_city = st.selectbox("City", ["Any"] + cities, key="selected_city")
+    selected_gender = st.selectbox("Gender", ["Any", "Female", "Male"], key="selected_gender")
 
 with col2:
     selected_specialty = st.selectbox("Specialty", ["Any"] + specialties, key="selected_specialty")
@@ -99,7 +104,8 @@ filters_applied = any([
     selected_type != "Any",
     selected_city != "Any",
     selected_specialty != "Any",
-    selected_setting != "Any"
+    selected_setting != "Any",
+    selected_gender != "Any"
 ])
 
 filtered_df = df.copy()
@@ -111,6 +117,8 @@ if selected_specialty != "Any":
     filtered_df = filtered_df[filtered_df["specialty"] == selected_specialty]
 if selected_setting != "Any":
     filtered_df = filtered_df[filtered_df["setting"] == selected_setting]
+if selected_gender != "Any":
+    filtered_df = filtered_df[filtered_df["gender"] == selected_gender]
 
 # Show results only if a filter is applied
 if filters_applied:
@@ -124,6 +132,7 @@ if filters_applied:
                 st.markdown(f"**Care Setting:** {row['setting']}")
                 st.markdown(f"**Address:** {row['address']}")
                 st.markdown(f"**Contact Info:** {row['contact_info']}")
+                st.markdown(f"**Gender:** {row['gender']}")
                 st.markdown(f"**Bio:** {row.get('bio', 'No bio available.')}")
 else:
     st.info("Use the filters above to find a matching doctor.")
