@@ -58,48 +58,55 @@ st.markdown(
 conn = sqlite3.connect("PT.db")
 df = pd.read_sql("SELECT * FROM doctors", conn)
 
-# Get unique filter options
-types = df["type"].dropna().unique().tolist()
-cities = df["city"].dropna().unique().tolist()
+# Get unique filter options (all sorted alphabetically, case-insensitive)
+types = sorted(df["type"].dropna().unique().tolist(), key=str.lower)
+cities = sorted(df["city"].dropna().unique().tolist(), key=str.lower)
 specialties = sorted(df["specialty"].dropna().unique().tolist(), key=str.lower)
-settings = df["setting"].dropna().unique().tolist()
+settings = sorted(df["setting"].dropna().unique().tolist(), key=str.lower)
 
-st.subheader("Filter by:")
+# Initialize session state
+for key in ["selected_type", "selected_city", "selected_specialty", "selected_setting"]:
+    if key not in st.session_state:
+        st.session_state[key] = "Any"
 
-# Reset Filters Button
+# Reset filters
 if st.button("Reset Filters"):
+    st.session_state.selected_type = "Any"
+    st.session_state.selected_city = "Any"
+    st.session_state.selected_specialty = "Any"
+    st.session_state.selected_setting = "Any"
     st.experimental_rerun()
 
-# Filter layout
+st.subheader("Filter by:")
 col1, col2 = st.columns(2)
 
 with col1:
-    selected_type = st.selectbox("Clinician Type", ["Any"] + types)
-    selected_city = st.selectbox("City", ["Any"] + cities)
+    st.session_state.selected_type = st.selectbox("Clinician Type", ["Any"] + types, index=(["Any"] + types).index(st.session_state.selected_type))
+    st.session_state.selected_city = st.selectbox("City", ["Any"] + cities, index=(["Any"] + cities).index(st.session_state.selected_city))
 
 with col2:
-    selected_specialty = st.selectbox("Specialty", ["Any"] + specialties)
-    selected_setting = st.selectbox("Care Setting", ["Any"] + settings)
+    st.session_state.selected_specialty = st.selectbox("Specialty", ["Any"] + specialties, index=(["Any"] + specialties).index(st.session_state.selected_specialty))
+    st.session_state.selected_setting = st.selectbox("Care Setting", ["Any"] + settings, index=(["Any"] + settings).index(st.session_state.selected_setting))
 
 # Apply filters
 filters_applied = any([
-    selected_type != "Any",
-    selected_city != "Any",
-    selected_specialty != "Any",
-    selected_setting != "Any"
+    st.session_state.selected_type != "Any",
+    st.session_state.selected_city != "Any",
+    st.session_state.selected_specialty != "Any",
+    st.session_state.selected_setting != "Any"
 ])
 
 filtered_df = df.copy()
-if selected_type != "Any":
-    filtered_df = filtered_df[filtered_df["type"] == selected_type]
-if selected_city != "Any":
-    filtered_df = filtered_df[filtered_df["city"] == selected_city]
-if selected_specialty != "Any":
-    filtered_df = filtered_df[filtered_df["specialty"] == selected_specialty]
-if selected_setting != "Any":
-    filtered_df = filtered_df[filtered_df["setting"] == selected_setting]
+if st.session_state.selected_type != "Any":
+    filtered_df = filtered_df[filtered_df["type"] == st.session_state.selected_type]
+if st.session_state.selected_city != "Any":
+    filtered_df = filtered_df[filtered_df["city"] == st.session_state.selected_city]
+if st.session_state.selected_specialty != "Any":
+    filtered_df = filtered_df[filtered_df["specialty"] == st.session_state.selected_specialty]
+if st.session_state.selected_setting != "Any":
+    filtered_df = filtered_df[filtered_df["setting"] == st.session_state.selected_setting]
 
-# Show results only if at least one filter is applied
+# Show results only if a filter is applied
 if filters_applied:
     st.subheader("Matching Doctors:")
     if filtered_df.empty:
@@ -112,3 +119,7 @@ if filters_applied:
                 st.markdown(f"**Address:** {row['address']}")
                 st.markdown(f"**Contact Info:** {row['contact_info']}")
                 st.markdown(f"**Bio:** {row.get('bio', 'No bio available.')}")
+else:
+    st.info("Use the filters above to find a matching doctor.")
+
+conn.close()
