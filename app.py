@@ -65,14 +65,27 @@ specialties = sorted(df["specialty"].dropna().unique().tolist(), key=str.lower)
 settings = sorted(df["setting"].dropna().unique().tolist(), key=str.lower)
 genders = sorted(df["gender"].dropna().unique().tolist(), key=str.lower)
 
-# Initialize session state if not set
-for key in ["selected_type", "selected_city", "selected_specialty", "selected_setting", "selected_gender"]:
+# Initialize session state
+filter_keys = [
+    "selected_type", "selected_city",
+    "selected_specialty", "selected_setting", "selected_gender"
+]
+for key in filter_keys:
     if key not in st.session_state:
         st.session_state[key] = "Any"
 
+# Handle reset trigger safely
+if "reset_triggered" not in st.session_state:
+    st.session_state.reset_triggered = False
+
+if st.session_state.reset_triggered:
+    for key in filter_keys:
+        st.session_state[key] = "Any"
+    st.session_state.reset_triggered = False
+
 # Filter section with 2 columns and 3 rows
 st.subheader("Filter by:")
-col1, col2 = st.columns(2)
+col1, col2 = st.columns([1, 1])  # Equal width
 
 with col1:
     st.selectbox("Clinician Type", ["Any"] + types, key="selected_type")
@@ -82,15 +95,11 @@ with col1:
 with col2:
     st.selectbox("Specialty", ["Any"] + specialties, key="selected_specialty")
     st.selectbox("Care Setting", ["Any"] + settings, key="selected_setting")
-    st.markdown("<br>", unsafe_allow_html=True)  # Align button
+    st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Reset Filters"):
-        st.session_state.selected_type = "Any"
-        st.session_state.selected_city = "Any"
-        st.session_state.selected_specialty = "Any"
-        st.session_state.selected_setting = "Any"
-        st.session_state.selected_gender = "Any"
+        st.session_state.reset_triggered = True
 
-# Pull values from session
+# Pull values from session state
 selected_type = st.session_state.selected_type
 selected_city = st.session_state.selected_city
 selected_specialty = st.session_state.selected_specialty
