@@ -58,7 +58,7 @@ st.markdown(
 conn = sqlite3.connect("PT.db")
 df = pd.read_sql("SELECT * FROM doctors", conn)
 
-# Get unique filter options (all sorted alphabetically, case-insensitive)
+# Get unique filter options (sorted alphabetically, case-insensitive)
 types = sorted(df["type"].dropna().unique().tolist(), key=str.lower)
 cities = sorted(df["city"].dropna().unique().tolist(), key=str.lower)
 specialties = sorted(df["specialty"].dropna().unique().tolist(), key=str.lower)
@@ -69,21 +69,20 @@ for key in ["selected_type", "selected_city", "selected_specialty", "selected_se
     if key not in st.session_state:
         st.session_state[key] = "Any"
 
-# Reset filters safely
-# Handle reset button
+# Handle reset button (sets a flag)
 if st.button("Reset Filters"):
+    st.session_state._trigger_reset = True
+
+# After rerun, perform reset once and clear the flag
+if st.session_state.get("_trigger_reset", False):
     st.session_state.selected_type = "Any"
     st.session_state.selected_city = "Any"
     st.session_state.selected_specialty = "Any"
     st.session_state.selected_setting = "Any"
-    st.session_state._reset_done = True  # Temporary flag to detect clean reset
+    del st.session_state["_trigger_reset"]
     st.experimental_rerun()
 
-# Avoid rerun loop by deleting flag after one use
-if st.session_state.get("_reset_done"):
-    del st.session_state["_reset_done"]
-
-
+# Filter UI
 st.subheader("Filter by:")
 col1, col2 = st.columns(2)
 
