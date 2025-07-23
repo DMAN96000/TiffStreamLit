@@ -70,25 +70,35 @@ for key in ["selected_type", "selected_city", "selected_specialty", "selected_se
     if key not in st.session_state:
         st.session_state[key] = "Any"
 
-# Handle reset button without rerun
+# Filter section
 st.subheader("Filter by:")
-if st.button("Reset Filters"):
-    st.session_state.selected_type = "Any"
-    st.session_state.selected_city = "Any"
-    st.session_state.selected_specialty = "Any"
-    st.session_state.selected_setting = "Any"
-    st.session_state.selected_gender = "Any"
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-# Dropdown UI (reads from session state)
-col1, col2 = st.columns(2)
 with col1:
-    selected_type = st.selectbox("Clinician Type", ["Any"] + types, key="selected_type")
-    selected_city = st.selectbox("City", ["Any"] + cities, key="selected_city")
-    selected_gender = st.selectbox("Gender", ["Any", "Female", "Male"], key="selected_gender")
-
+    st.selectbox("Clinician Type", ["Any"] + types, key="selected_type")
 with col2:
-    selected_specialty = st.selectbox("Specialty", ["Any"] + specialties, key="selected_specialty")
-    selected_setting = st.selectbox("Care Setting", ["Any"] + settings, key="selected_setting")
+    st.selectbox("City", ["Any"] + cities, key="selected_city")
+with col3:
+    st.selectbox("Specialty", ["Any"] + specialties, key="selected_specialty")
+with col4:
+    st.selectbox("Care Setting", ["Any"] + settings, key="selected_setting")
+with col5:
+    st.selectbox("Gender", ["Any", "Female", "Male"], key="selected_gender")
+with col6:
+    st.markdown("<br>", unsafe_allow_html=True)  # spacing to align button
+    if st.button("Reset Filters"):
+        st.session_state.selected_type = "Any"
+        st.session_state.selected_city = "Any"
+        st.session_state.selected_specialty = "Any"
+        st.session_state.selected_setting = "Any"
+        st.session_state.selected_gender = "Any"
+
+# Pull current selections from session_state
+selected_type = st.session_state.selected_type
+selected_city = st.session_state.selected_city
+selected_specialty = st.session_state.selected_specialty
+selected_setting = st.session_state.selected_setting
+selected_gender = st.session_state.selected_gender
 
 # Apply filters
 filters_applied = any([
