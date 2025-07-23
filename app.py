@@ -111,4 +111,4 @@ if filters_applied:
                 st.markdown(f"**Care Setting:** {row['setting']}")
                 st.markdown(f"**Address:** {row['address']}")
                 st.markdown(f"**Contact Info:** {row['contact_info']}")
-                st.markdown(f"**Bio:** {row.get('bio', 'No
+                st.markdown(f"**Bio:** {row.get('bio', 'No bio available.')}")
