@@ -69,42 +69,40 @@ for key in ["selected_type", "selected_city", "selected_specialty", "selected_se
     if key not in st.session_state:
         st.session_state[key] = "Any"
 
-# Reset filters
+# Reset filters safely
 if st.button("Reset Filters"):
-    st.session_state.selected_type = "Any"
-    st.session_state.selected_city = "Any"
-    st.session_state.selected_specialty = "Any"
-    st.session_state.selected_setting = "Any"
+    for key in ["selected_type", "selected_city", "selected_specialty", "selected_setting"]:
+        st.session_state[key] = "Any"
     st.experimental_rerun()
 
 st.subheader("Filter by:")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.session_state.selected_type = st.selectbox("Clinician Type", ["Any"] + types, index=(["Any"] + types).index(st.session_state.selected_type))
-    st.session_state.selected_city = st.selectbox("City", ["Any"] + cities, index=(["Any"] + cities).index(st.session_state.selected_city))
+    selected_type = st.selectbox("Clinician Type", ["Any"] + types, key="selected_type")
+    selected_city = st.selectbox("City", ["Any"] + cities, key="selected_city")
 
 with col2:
-    st.session_state.selected_specialty = st.selectbox("Specialty", ["Any"] + specialties, index=(["Any"] + specialties).index(st.session_state.selected_specialty))
-    st.session_state.selected_setting = st.selectbox("Care Setting", ["Any"] + settings, index=(["Any"] + settings).index(st.session_state.selected_setting))
+    selected_specialty = st.selectbox("Specialty", ["Any"] + specialties, key="selected_specialty")
+    selected_setting = st.selectbox("Care Setting", ["Any"] + settings, key="selected_setting")
 
 # Apply filters
 filters_applied = any([
-    st.session_state.selected_type != "Any",
-    st.session_state.selected_city != "Any",
-    st.session_state.selected_specialty != "Any",
-    st.session_state.selected_setting != "Any"
+    selected_type != "Any",
+    selected_city != "Any",
+    selected_specialty != "Any",
+    selected_setting != "Any"
 ])
 
 filtered_df = df.copy()
-if st.session_state.selected_type != "Any":
-    filtered_df = filtered_df[filtered_df["type"] == st.session_state.selected_type]
-if st.session_state.selected_city != "Any":
-    filtered_df = filtered_df[filtered_df["city"] == st.session_state.selected_city]
-if st.session_state.selected_specialty != "Any":
-    filtered_df = filtered_df[filtered_df["specialty"] == st.session_state.selected_specialty]
-if st.session_state.selected_setting != "Any":
-    filtered_df = filtered_df[filtered_df["setting"] == st.session_state.selected_setting]
+if selected_type != "Any":
+    filtered_df = filtered_df[filtered_df["type"] == selected_type]
+if selected_city != "Any":
+    filtered_df = filtered_df[filtered_df["city"] == selected_city]
+if selected_specialty != "Any":
+    filtered_df = filtered_df[filtered_df["specialty"] == selected_specialty]
+if selected_setting != "Any":
+    filtered_df = filtered_df[filtered_df["setting"] == selected_setting]
 
 # Show results only if a filter is applied
 if filters_applied:
