@@ -70,9 +70,17 @@ for key in ["selected_type", "selected_city", "selected_specialty", "selected_se
         st.session_state[key] = "Any"
 
 # Reset filters safely
+# Handle reset button
 if st.button("Reset Filters"):
-    for key in ["selected_type", "selected_city", "selected_specialty", "selected_setting"]:
-        st.session_state[key] = "Any"
+    st.session_state.reset_triggered = True
+
+# After rerun, actually clear the filters
+if st.session_state.get("reset_triggered"):
+    st.session_state.selected_type = "Any"
+    st.session_state.selected_city = "Any"
+    st.session_state.selected_specialty = "Any"
+    st.session_state.selected_setting = "Any"
+    st.session_state.reset_triggered = False
     st.experimental_rerun()
 
 st.subheader("Filter by:")
