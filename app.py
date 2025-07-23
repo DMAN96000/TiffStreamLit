@@ -72,16 +72,17 @@ for key in ["selected_type", "selected_city", "selected_specialty", "selected_se
 # Reset filters safely
 # Handle reset button
 if st.button("Reset Filters"):
-    st.session_state.reset_triggered = True
-
-# After rerun, actually clear the filters
-if st.session_state.get("reset_triggered"):
     st.session_state.selected_type = "Any"
     st.session_state.selected_city = "Any"
     st.session_state.selected_specialty = "Any"
     st.session_state.selected_setting = "Any"
-    st.session_state.reset_triggered = False
+    st.session_state._reset_done = True  # Temporary flag to detect clean reset
     st.experimental_rerun()
+
+# Avoid rerun loop by deleting flag after one use
+if st.session_state.get("_reset_done"):
+    del st.session_state["_reset_done"]
+
 
 st.subheader("Filter by:")
 col1, col2 = st.columns(2)
